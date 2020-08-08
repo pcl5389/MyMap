@@ -1,0 +1,212 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8">
+    <title>商户分布图</title>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, minimum-scale=1.0, maximum-scale=1.0, user-scalable=no" />
+	<style type="text/css">
+		html { overflow-x: hidden; overflow-y: auto; }
+	</style>
+    <script charset="utf-8" src="http://map.qq.com/api/js?v=2.exp&key=3JEBZ-2NLKU-MY5VK-4IPED-7JYD7-BIFFR"></script>
+	<script src="http://cdn.bootcss.com/jquery/1.11.1/jquery.min.js"></script>
+    <style type="text/css">
+        html,
+        body {
+            height: 100%;
+            margin: 0px;
+            padding: 0px
+        }
+        #container {
+            width: 100%;
+            height: 100%
+        }
+        body div {
+            text-indent: 0px;
+            line-height: 22px;
+        }
+        #container {
+		   min-width:300px;
+		   min-height:200px;
+		}
+    </style>
+</head>
+
+<body onload="init()">
+    <div id="container"></div>
+    <script type="text/javascript">
+        var showing=false;
+		var marks=[];
+		var map;
+		var infoWin;
+		var labels;
+		var timeout_show_label=0;
+		var showStreet=false;
+		var anchor = new qq.maps.Point(12, 24),
+			size = new qq.maps.Size(24, 24),
+			origin = new qq.maps.Point(0, 0),
+			icon = new qq.maps.MarkerImage('http://oa.sdhuijiu.com/View/huijiu/Merchants/pt4.png', size, origin, anchor);
+
+		$(document).keydown(function(event){
+			if(event.ctrlKey)
+				showStreet=true;
+        });
+        $(document).keyup(function(event){
+			if(event.keyCode==17)         
+				showStreet=false;
+        });
+
+		function OpenWin(id, title, latlng)
+		{
+			var url="/merchants/addnew.aspx?ID="+id;
+			if(showStreet)
+			{
+					var panoService=new qq.maps.PanoramaService();
+					panoService.getPano(latlng, 1000, function (result){
+					if(result!=null)
+					{
+						  url="/merchants/street.aspx?ID="+id+"&svid="+result.svid;
+					}
+					var diag = new Dialog();
+					diag.width = 800;
+					diag.height = 500;
+					diag.title = title;
+					diag.url = url;
+					diag.show();
+				});
+			}
+			else
+			{
+				var diag = new Dialog();
+				diag.width = 800;
+				diag.height = 500;
+				diag.title = "查看商户信息";
+				diag.url = url;
+				diag.show();
+			}
+			
+		  //window.open (url, "_blank", "height=100, width=400, toolbar= no, menubar=no, scrollbars=no, resizable=no, location=no, status=no,top=100,left=300");
+		}
+
+		function init() {
+            //div容器
+            var container = document.getElementById("container");
+            var centerDiv = document.getElementById("centerDiv");
+
+            //初始化地图
+            map = new qq.maps.Map(container, {
+                center: new qq.maps.LatLng(36.656220,117.007930),
+				mapTypeControl: false,
+				zoomControl:false,
+				panControl:false,
+				scaleControl:true,
+                zoom: 7
+            });
+			qq.maps.event.addListener(map, 'idle', function() {
+				var area= map.getBounds();
+				if(showing)
+				{
+						showing=false;
+				}
+				showLabels(map, area.lng.minX, area.lng.maxX, area.lat.minY, area.lat.maxY)
+				//centerDiv.innerHTML = "latlng:" + map.getCenter()+"|i="+i+"|j="+j+"|k="+k;
+            });
+			//showSigns(map,0);
+        }
+		function showLabel(map, i)
+		{
+			if(showing && i<labels.count)
+			{
+				for(var j=0; j<marks.length; j++)
+				{
+					if (marks[j].id==labels.data[i].ID)	 //已经存在
+					{
+						i++;
+						setTimeout(function(){showLabel(map, i);},1);  
+						return;
+					}
+				}
+				//添加新点
+				var latlng=new qq.maps.LatLng(labels.data[i].lat, labels.data[i].lng);
+				
+
+				var marker = new qq.maps.Marker({
+					position: latlng,
+					icon:icon,
+					title: labels.data[i].m_name,
+					//animation: qq.maps.MarkerAnimation.UP,
+					draggable: true,
+					map: map
+				});
+				//marker.pos=labels.data[i].pos;
+				marker.id=labels.data[i].ID;
+				qq.maps.event.addListener(marker, 'mouseover', function() {
+					 if(infoWin!=null){infoWin.close();}
+					 infoWin=new qq.maps.InfoWindow( {
+						map : map
+					});
+					infoWin.open();
+					infoWin.setContent('<div style="text-align:left;white-space:nowrap;margin:0px; font-size:12px;">'+ marker.getTitle() +'</div>');
+					infoWin.setPosition(marker.getPosition());					
+				});
+
+				qq.maps.event.addListener(marker, 'click', function() {
+					 if(infoWin!=null){infoWin.close();}
+					 infoWin=new qq.maps.InfoWindow( {
+						map : map
+					});
+					infoWin.open();
+					infoWin.setContent('<div style="text-align:left;white-space:nowrap;margin:0px; font-size:12px;">'+ marker.getTitle() +'</div>');
+					infoWin.setPosition(marker.getPosition());		
+					window.external.listviewitem_active(marker.id);
+					 //OpenWin(marker.id, marker.getTitle(), marker.getPosition());			
+				});
+
+				
+				qq.maps.event.addListener(marker, 'mouseout', function() {
+					//infoWin.close();
+				});
+				marker.setVisible(true);
+				marks.push(marker);
+			}
+			i++;
+			if(showing && i<labels.count)
+			{
+				timeout_show_label=setTimeout(function(){showLabel(map, i);},1);  
+			}
+			else
+			{
+				showing=false;
+			}
+		}
+
+		function showLabels(map, x1,x2,y1,y2)
+		{
+			var result=window.external.list_in_map(x1,x2,y1,y2);
+			showing=true;
+			/*
+			var _maker;
+			while(_marker=marks.pop())
+			{
+			_marker.setMap(null);
+			} */
+			labels=eval('(' + result + ')');
+			showLabel(map, 0);
+		}
+
+		function findLabel(id)
+		{
+				 for (var i=0;i<marks.length;i++){
+					if(marks[i].id==parseInt(id))
+					 {
+						 map.setCenter(marks[i].getPosition());
+						 qq.maps.event.trigger(marks[i],"mouseover");
+						 return;
+					 }
+				}  
+		}
+
+
+    </script>
+</body>
+
+</html>

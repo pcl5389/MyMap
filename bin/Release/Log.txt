@@ -1,0 +1,2 @@
+2019/3/20 17:23:21,“D:\Projects\MyMap\bin\Release\App_Data\data.mdb”不是一个有效的路径。确定路径名称拼写是否正确，以及是否连接到文件存放的服务器。,select * from m_merchant
+2019/3/20 17:36:28,“D:\Projects\MyMap\bin\Release\App_Data\data.mdb”不是一个有效的路径。确定路径名称拼写是否正确，以及是否连接到文件存放的服务器。,select * from m_merchant

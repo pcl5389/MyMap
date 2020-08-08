@@ -1,0 +1,15 @@
+D:\Projects\MyMap\bin\Release\MyMap.exe
+D:\Projects\MyMap\bin\Release\MyMap.pdb
+D:\Projects\MyMap\bin\Release\Newtonsoft.Json.dll
+D:\Projects\MyMap\bin\Release\Scaler.dll
+D:\Projects\MyMap\bin\Release\VTemplate.Engine.dll
+D:\Projects\MyMap\bin\Release\AjaxPro.2.dll
+D:\Projects\MyMap\obj\Release\MyMap.Form1.resources
+D:\Projects\MyMap\obj\Release\MyMap.Properties.Resources.resources
+D:\Projects\MyMap\obj\Release\MyMap.csproj.GenerateResource.cache
+D:\Projects\MyMap\obj\Release\MyMap.csproj.CoreCompileInputs.cache
+D:\Projects\MyMap\obj\Release\MyMap.csproj.CopyComplete
+D:\Projects\MyMap\obj\Release\MyMap.exe
+D:\Projects\MyMap\obj\Release\MyMap.pdb
+D:\Projects\MyMap\obj\Release\MyMap.csprojAssemblyReference.cache
+D:\Projects\MyMap\bin\Release\Scaler.pdb
